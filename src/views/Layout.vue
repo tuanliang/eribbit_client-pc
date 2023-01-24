@@ -1,6 +1,6 @@
 <template>
   <!-- 顶部通栏 -->
-  <nav>顶部通栏</nav>
+  <appNavBar></appNavBar>
   <!-- 头部组件 -->
   <header>头部组件</header>
   <!-- 内容容器 -->
@@ -12,8 +12,12 @@
   <footer>底部组件</footer>
 </template>
 <script>
+import appNavBar from '@/components/app-navbar.vue'
 export default {
-  name: 'LayOut'
+  name: 'LayOut',
+  components: {
+    appNavBar
+  }
 }
 </script>
 <style scoped lang="less">
