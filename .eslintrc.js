@@ -12,6 +12,9 @@ module.exports = {
   },
   rules: {
     'no-irregular-whitespace': 'off',
+    'quotes': 'off',
+    'semi': 'off',
+    'comma-dangle': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
 
