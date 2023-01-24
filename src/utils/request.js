@@ -25,6 +25,7 @@ instance.interceptors.request.use(config => {
     // 设置token
     config.headers.Authorization = `Bearer ${profile.token}`
   }
+  return config
 }, err => {
   return Promise.reject(err)
 })
@@ -32,18 +33,33 @@ instance.interceptors.request.use(config => {
 // res=>res.data 取出data数据，将来调用接口的时候直接拿到的就是后台的数据
 instance.interceptors.response.use(res => res.data, err => {
   // 401状态码，进入该函数
-  if (err.response && err.response.status == 401) {
+  if (err.response && err.response.status === 401) {
     // 1.清空无效用户信息
     // 2.跳转到登录页面
     // 3.跳转需要传参（当前路由地址）给登录页码
     store.commit('user/setUser', {})
-    // router.push('/login?redirectUrl='+'当前路由地址')
-    // 当前路由地址 如果在组件里头：`/user?a=10` $route.path === /user $route.fullPath === /user?a=10
-    // js模块里：router.currentRoute.fullPath 就是当前路由地址  
-    // router.currentRoute是ref响应式数据 ，所以获取数据为 router.currentRoute.value.fullPath
+    // router.push('/login?redirectUrl=' + '当前路由地址')
+    // 当前路由地址 如果在组件里头：`/user?a=10` $route.path = /user $route.fullPath = /user?a=10
+    // js模块里：router.currentRoute.fullPath 就是当前路由地址
+    // router.currentRoute是ref响应式数据,所以获取数据为 router.currentRoute.value.fullPath
     // encodeURIComponent 转换uri编码，防止解析地址出问题
     const fullPath = encodeURIComponent(router.currentRoute.value.fullPath)
     router.push('/login?redirectUrl=' + fullPath)
   }
   return Promise.reject(err)
 })
+
+// 请求工具函数
+export default (url, method, submitData) => {
+  // 负责发请求：请求地址,请求方式，提交的数据
+  return instance({
+    url,
+    method,
+    // 1.如果是get请求，需要使用params来传递submitData ?a=10&b=10
+    // 2.如果不是get请求，需要使用data来传递submitData 请求体传参
+    // const a = {name:100} 可这样 a[10>9?'name':'age']
+    // [] 设置一个动态的key，写js表达式，js表达式的执行结果当作key
+    // method参数：get，Get，GET，转换成小写再判断
+    [method.toLowerCase() === 'get' ? 'params' : 'data']: submitData
+  })
+}
