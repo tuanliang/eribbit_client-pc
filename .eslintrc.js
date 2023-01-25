@@ -11,6 +11,7 @@ module.exports = {
     parser: '@babel/eslint-parser'
   },
   rules: {
+    'no-unused-vars': 'off',
     'no-irregular-whitespace': 'off',
     'quotes': 'off',
     'semi': 'off',
