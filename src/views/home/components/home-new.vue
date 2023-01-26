@@ -5,25 +5,29 @@
         <XtxMore path="/" />
       </template>
       <!-- 面板内容 -->
-      <ul class="goods-list">
-        <li v-for="item in goods" :key="item.id">
-          <RouterLink :to="`/product/${item.id}`">
-            <img :src="item.picture" alt="">
-            <p class="name ellipsis">{{ item.name }}</p>
-            <p class="price">&yen;{{ item.price }}</p>
-          </RouterLink>
-        </li>
-      </ul>
+      <Transition name="fade">
+        <ul v-if="goods.length" class="goods-list">
+          <li v-for="item in goods" :key="item.id">
+            <RouterLink :to="`/product/${item.id}`">
+              <img :src="item.picture" alt="">
+              <p class="name ellipsis">{{ item.name }}</p>
+              <p class="price">&yen;{{ item.price }}</p>
+            </RouterLink>
+          </li>
+        </ul>
+        <HomeSkeleton bg="#f0f9f4" v-else></HomeSkeleton>
+      </Transition>
     </HomePanel>
   </div>
 </template>
 <script>
 import { ref } from 'vue'
 import HomePanel from './home-panel'
+import HomeSkeleton from './home-skeleton.vue'
 import { findNew } from '@/api/home'
 export default {
   name: 'HomeNew',
-  components: { HomePanel },
+  components: { HomePanel, HomeSkeleton },
   setup () {
     const goods = ref([])
     findNew().then(data => {
@@ -34,6 +38,21 @@ export default {
 }
 </script>
 <style scoped lang="less">
+.fade {
+  &-leave {
+    &-active {
+      position: absolute;
+      width: 100%;
+      transition: opacity .5s .2s;
+      z-index: 1;
+    }
+
+    &-to {
+      opacity: 0;
+    }
+  }
+}
+
 .goods-list {
   display: flex;
   justify-content: space-between;
