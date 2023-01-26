@@ -7,25 +7,24 @@
       <!-- 轮播图 -->
       <HomeBanner></HomeBanner>
       <!-- 新鲜好物 -->
-      <HomePanel title="新鲜好物" sub-title="新鲜出炉 品质靠谱">
-        <template #right>
-          <XtxMore path="/"></XtxMore>
-          <!-- 面板内容 -->
-        </template>
-      </HomePanel>
+      <HomeNew></HomeNew>
+      <!-- 人气推荐 -->
+      <HomeHot></HomeHot>
     </div>
   </div>
 </template>
 <script>
 import HomeCategory from './components/home-category.vue'
 import HomeBanner from './components/home-banner.vue'
-import HomePanel from './components/home-panel.vue'
+import HomeNew from './components/home-new.vue'
+import HomeHot from './components/home-hot.vue'
 export default {
   name: 'HomePage',
   components: {
     HomeCategory,
     HomeBanner,
-    HomePanel
+    HomeNew,
+    HomeHot
   }
 }
 </script>
