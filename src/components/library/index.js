@@ -1,21 +1,35 @@
 // 扩展vue原有的功能：全局组件，自定义指令，挂载原型方法
 // 这就是插件
 // vue3.0插件要素写法：导出一个对象，有install函数，默认传入了app应用实例，Vue基础之上扩展
-import XtxSkeleton from './xtx-skeleton.vue'
-import XtxCarousel from './xtx-carousel.vue'
-import XtxMore from './xtx-more.vue'
+
 import defaultImg from '@/assets/images/qrcode.jpg'
-import xtxBread from './xtx-bread.vue'
-import xtxBreadItem from './xtx-bread-item.vue'
+
+// import XtxSkeleton from './xtx-skeleton.vue'
+// import XtxCarousel from './xtx-carousel.vue'
+// import XtxMore from './xtx-more.vue'
+// import xtxBread from './xtx-bread.vue'
+// import xtxBreadItem from './xtx-bread-item.vue'
+
+const importFn = require.context('./', false, /\.vue$/)
+
 export default {
   install (app) {
     // 在app上进行扩展，app提供 component，directive函数
     // 如果要挂载原型，app.config.globalProperties.$http
-    app.component(XtxSkeleton.name, XtxSkeleton)
-    app.component(XtxCarousel.name, XtxCarousel)
-    app.component(XtxMore.name, XtxMore)
-    app.component(xtxBread.name, xtxBread)
-    app.component(xtxBreadItem.name, xtxBreadItem)
+
+    // app.component(XtxSkeleton.name, XtxSkeleton)
+    // app.component(XtxCarousel.name, XtxCarousel)
+    // app.component(XtxMore.name, XtxMore)
+    // app.component(xtxBread.name, xtxBread)
+    // app.component(xtxBreadItem.name, xtxBreadItem)
+
+    importFn.keys().forEach(path => {
+      // 导入组件
+      const component = importFn(path).default
+
+      app.component(component.name, component)
+    });
+
     // 定义指令
     defineDirective(app)
   }
