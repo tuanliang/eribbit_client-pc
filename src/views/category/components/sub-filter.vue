@@ -3,15 +3,14 @@
     <div class="item">
       <div class="head">品牌：</div>
       <div class="body">
-        <a @click="filterData.brands.selectedBrand = item.id"
-          :class="{ active: item.id === filterData.brands.selectedBrand }" href="javascript:;"
+        <a @click="changeBrand(item.id)" :class="{ active: item.id === filterData.selectedBrand }" href="javascript:;"
           v-for="item in filterData.brands" :key="item.id">{{ item.name }}</a>
       </div>
     </div>
     <div class="item" v-for="item in filterData.saleProperties" :key="item.id">
       <div class="head">{{ item.name }}</div>
       <div class="body">
-        <a @click="item.selectedAttr = prop.id" :class="{ active: prop.id === item.selectedAttr }" href="javascript:;"
+        <a @click="changeProp(item, prop.id)" :class="{ active: prop.id === item.selectedAttr }" href="javascript:;"
           v-for="prop in item.properties" :key="prop.id">{{ prop.name }}</a>
       </div>
     </div>
@@ -30,7 +29,7 @@ import { useRoute } from 'vue-router'
 import { findSubCategoryFilter } from '@/api/category'
 export default {
   name: 'SubFilter',
-  setup () {
+  setup (props, { emit }) {
     const route = useRoute()
     // 监听二级类目ID的变化获取筛选数据
     const filterData = ref(null)
@@ -44,7 +43,7 @@ export default {
           // 每一组的可筛选条件缺失 全部 条件 处理下数据加上全部
           // 给每一组数据加上一个选中的ID
           // 1.品牌
-          data.result.brands.selectedBrand = null
+          data.result.selectedBrand = null
           data.result.brands.unshift({ id: null, name: '全部' })
           // 2.属性
           data.result.saleProperties.forEach(item => {
@@ -57,7 +56,37 @@ export default {
         })
       }
     }, { immediate: true })
-    return { filterData, filterLoading }
+
+    // 获取筛选参数的函数
+    const getFilterParams = () => {
+      const obj = { brandId: null, attrs: [] }
+      // 品牌
+      obj.brandId = filterData.value.selectedBrand
+      // 销售属性
+      filterData.value.saleProperties.forEach(item => {
+        if (item.selectedAttr) {
+          const prop = item.properties.find(prop => prop.id === item.selectedAttr)
+          obj.attrs.push({ groupName: item.name, propertyName: prop.name })
+        }
+      })
+      // 参考数据 {brandId:'',attrs:[{groupName:'',propertyName:''},...]}
+      if (obj.attrs.length === 0) obj.attrs = null
+      return obj
+    }
+
+    // 记录当前选择的品牌
+    const changeBrand = (brandId) => {
+      if (filterData.value.selectedBrand === brandId) return
+      filterData.value.selectedBrand = brandId
+      emit('filter-change', getFilterParams())
+    }
+    // 记录选择的销售属性
+    const changeProp = (item, propId) => {
+      if (item.selectedAttr === propId) return
+      item.selectedAttr = propId
+      emit('filter-change', getFilterParams())
+    }
+    return { filterData, filterLoading, changeBrand, changeProp }
   }
 }
 </script>

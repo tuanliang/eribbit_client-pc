@@ -21,6 +21,7 @@ module.exports = {
 
   },
   "globals": {
-    "error": true
+    "error": true,
+    "emit": true
   }
 }
