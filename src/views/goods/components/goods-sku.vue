@@ -4,9 +4,11 @@
       <dt>{{ item.name }}</dt>
       <dd>
         <template v-for="val in item.values" :key="val.name">
-          <img @click="changeSku(item, val)" v-if="val.picture" :class="{ selected: val.selected }" :src="val.picture"
-            alt="val.name">
-          <span @click="changeSku(item, val)" :class="{ selected: val.selected }" v-else>{{ val.name }}</span>
+          <img @click="changeSku(item, val)" v-if="val.picture"
+            :class="{ selected: val.selected, disabled: val.disabled }" :src="val.picture" alt="val.name">
+          <span @click="changeSku(item, val)" :class="{ selected: val.selected, disabled: val.disabled }" v-else>{{
+            val.name
+          }}</span>
         </template>
       </dd>
     </dl>
@@ -24,10 +26,14 @@ export default {
   },
   setup (props) {
     const pathMap = getPathMap(props.goods.skus)
-    console.log(pathMap)
+    // ☆组件初始化：更新按钮禁用状态
+    updateDisabledStatus(props.goods.specs, pathMap)
 
     // 1.选中与取消选中，约定在每一个按钮都拥有自己的选中状态数据：selected
     const changeSku = (item, val) => {
+      // 如果按钮是禁用的 阻止程序运行
+      if (val.disabled) return
+
       if (val.selected) {
         val.selected = false
       } else {
@@ -36,6 +42,8 @@ export default {
         })
         val.selected = true
       }
+      // ☆点击按钮时：更新按钮禁用状态
+      updateDisabledStatus(props.goods.specs, pathMap)
     }
     return { changeSku }
   }
@@ -69,6 +77,34 @@ const getPathMap = (skus) => {
     }
   })
   return pathMap
+}
+
+const getSelectedValues = (specs) => {
+  const arr = []
+  specs.forEach(item => {
+    // 选中的按钮
+    const selectedVal = item.values.find(val => val.selected)
+    arr.push(selectedVal ? selectedVal.name : undefined)
+  })
+  return arr
+}
+
+// 更新按钮禁用状态
+const updateDisabledStatus = (specs, pathMap) => {
+  // 1.约定每一个按钮的状态由本身的disabled数据来控制
+  specs.forEach((item, i) => {
+    const selectedValues = getSelectedValues(specs)
+    item.values.forEach(val => {
+      // 2.判断当前是否选中，是选中不用判断
+      if (val.selected) return
+      // 3.拿当前的值按照顺序套入选中的值数组
+      selectedValues[i] = val.name
+      // 4.剔除undefined数据，按照分隔符拼接key
+      const key = selectedValues.filter(value => value).join(spliter)
+      // 5.拿着key去路径字典中查找是否有数据，有可以点击，没有就禁用
+      val.disabled = !pathMap[key]
+    })
+  })
 }
 </script>
 <style scoped lang="less">
