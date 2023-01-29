@@ -12,7 +12,8 @@
     </dl>
     <dl>
       <dt>配送</dt>
-      <dd>至 </dd>
+      <dd>至<XtxCity></XtxCity>
+      </dd>
     </dl>
     <dl>
       <dt>服务</dt>
@@ -27,14 +28,17 @@
 </template>
 
 <script>
+import XtxCity from '@/components/library/xtx-city.vue';
+
 export default {
-  name: 'GoodName',
+  name: "GoodName",
   props: {
     goods: {
       type: Object,
       default: () => ({})
     }
-  }
+  },
+  components: { XtxCity }
 }
 </script>
 
