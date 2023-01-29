@@ -22,10 +22,20 @@ export default {
     goods: {
       type: Object,
       default: () => ({})
+    },
+    skuId: {
+      type: String,
+      default: ''
     }
   },
   setup (props) {
     const pathMap = getPathMap(props.goods.skus)
+
+    // 根据skuId初始化选中
+    if (props.skuId) {
+      initDefaultSelected(props.goods, props.skuId)
+    }
+
     // ☆组件初始化：更新按钮禁用状态
     updateDisabledStatus(props.goods.specs, pathMap)
 
@@ -105,6 +115,19 @@ const updateDisabledStatus = (specs, pathMap) => {
       val.disabled = !pathMap[key]
     })
   })
+}
+
+// 默认选中
+const initDefaultSelected = (goods, skuId) => {
+  // 1.找出sku的信息
+  // 2.遍历每一个按钮，按钮的值和sku记录的值相同，就选中
+  const sku = goods.skus.find(sku => sku.id === skuId)
+  if (sku) {
+    goods.specs.forEach((item, i) => {
+      const val = item.values.find(val => val.name === sku.specs[i].valueName)
+      val.selected = true
+    })
+  }
 }
 </script>
 <style scoped lang="less">
