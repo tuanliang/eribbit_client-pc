@@ -6,21 +6,36 @@
       <i class="iconfont icon-angle-down"></i>
     </div>
     <div class="option" v-if="visible">
-      <span class="ellipsis" v-for="i in 24" :key="i">北京市</span>
+      <div v-if="loading" class="loading"></div>
+      <template v-else>
+        <span class="ellipsis" v-for="item in currList" :key="item.code">{{ item.name }}</span>
+      </template>
     </div>
   </div>
 </template>
 <script>
+import { computed } from '@vue/reactivity'
 import { onClickOutside } from '@vueuse/core'
+import axios from 'axios'
 import { ref } from 'vue'
 export default {
   name: 'XtxCity',
   setup () {
     // 显示隐藏数据
     const visible = ref(false)
+
+    // 所有省市区数据
+    const allCityData = ref([])
+    const loading = ref(false)
     // 提供打开和关闭函数
     const open = () => {
       visible.value = true
+      // 获取地区数据
+      loading.value = true
+      getCityData().then(data => {
+        allCityData.value = data
+        loading.value = false
+      })
     }
     const close = () => {
       visible.value = false
@@ -36,8 +51,36 @@ export default {
       // 参数2：点击率该元素外的其他地方触发的函数
       close()
     })
-    return { visible, toggle, target }
+    // 实现计算属性，获取当前显示的地区数组
+    const currList = computed(() => {
+      // 默认省一级
+      const list = allCityData.value
+      // 可能：市一级
+      // 可能：县地区一级
+      return list
+    })
+    return { visible, toggle, target, loading, currList }
   }
+}
+// 获取省市区数据
+const getCityData = () => {
+  // 数据.https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/area.json
+  // 1.当本地没有缓存，发请求获取数据
+  // 2.当本地有缓存，取出本地数据
+  // 返回promise在then获取数据，这里可能是异步操作可能是同步操作
+  return new Promise((resolve, reject) => {
+    // 约定：数据存储在windows上的cityDatea字段
+    if (window.cityData) {
+      resolve(window.cityData)
+    } else {
+      const url = 'https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/area.json'
+      axios.get(url).then(res => {
+        // 缓存
+        window.cityData = res.data
+        resolve(res.data)
+      })
+    }
+  })
 }
 </script>
 
@@ -96,6 +139,12 @@ export default {
       &:hover {
         background: #f5f5f5;
       }
+    }
+
+    .loading {
+      height: 290px;
+      width: 100%;
+      background: url(../../assets/images/qrcode.jpg) no-repeat center;
     }
   }
 }
