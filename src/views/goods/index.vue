@@ -18,6 +18,8 @@
         </div>
         <div class="spec">
           <GoodsName :goods="goods"></GoodsName>
+          <!-- sku组件 -->
+          <GoodsSku :goods="goods"></GoodsSku>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -45,9 +47,10 @@ import GoodsName from './components/goods-names'
 import { nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
+import GoodsSku from './components/goods-sku.vue'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName },
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku },
   setup () {
     // 获取项目详情，进行熏染
     const goods = useGoods()
