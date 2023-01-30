@@ -16,34 +16,29 @@
     </div>
     <div class="sort">
       <span>排序：</span>
-      <a @click="reqParams.sortField = null" :class="{ active: reqParams.sortField === null }"
-        href="javascript:;">默认</a>
-      <a @click="reqParams.sortField = 'createTime'" :class="{ active: reqParams.sortField === 'createTime' }"
+      <a @click="changSort(null)" :class="{ active: reqParams.sortField === null }" href="javascript:;">默认</a>
+      <a @click="changSort('createTime')" :class="{ active: reqParams.sortField === 'createTime' }"
         href="javascript:;">最新</a>
-      <a @click="reqParams.sortField='praiseCount'" :class="{ active: reqParams.sortField === 'praiseCount' }"
+      <a @click="changSort('praiseCount')" :class="{ active: reqParams.sortField === 'praiseCount' }"
         href="javascript:;">最热</a>
     </div>
     <!-- 评价列表 -->
-    <div class="list">
-      <div class="item">
+    <div class="list" v-if="commentList">
+      <div class="item" v-for="item in commentList" :key="item.id">
         <div class="user">
-          <img src="http://zhoushugang.gitee.io/erabbit-client-pc-static/uploads/avatar_1.png" alt="">
-          <span>兔****m</span>
+          <img :src="item.member.avatar" alt="">
+          <span>{{ formatNickname(item.member.nickname) }}</span>
         </div>
         <div class="body">
           <div class="score">
-            <i class="iconfont icon-wjx01"></i>
-            <i class="iconfont icon-wjx01"></i>
-            <i class="iconfont icon-wjx01"></i>
-            <i class="iconfont icon-wjx01"></i>
-            <i class="iconfont icon-wjx02"></i>
-            <span class="attr">颜色：黑色 尺码：M</span>
+            <i v-for="i in item.score" :key="i + 's'" class="iconfont icon-wjx01"></i>
+            <i v-for="i in 5 - item.score" :key="i + 'k'" class="iconfont icon-wjx02"></i>
+            <span class="attr">{{ formatSpecs(item.orderInfo.specs) }}</span>
           </div>
-          <div class="text">网易云app上这款耳机非常不错 新人下载网易云购买这款耳机优惠大 而且耳机🎧确实正品 音质特别好 戴上这款耳机 听音乐看电影效果声音真是太棒了 无线方便 小盒自动充电
-            最主要是质量好音质棒 想要买耳机的放心拍 音效巴巴滴 老棒了</div>
+          <div class="text">{{ item.content }}</div>
           <div class="time">
-            <span>2023-10-10 10:11:22</span>
-            <span class="zan"><i class="iconfont icon-dianzan"></i>100</span>
+            <span>{{ item.createTime }}</span>
+            <span class="zan"><i class="iconfont icon-dianzan"></i>{{ item.praiseCount }}</span>
           </div>
         </div>
       </div>
@@ -92,6 +87,14 @@ export default {
         reqParams.hasPicture = null
         reqParams.tag = tag.title
       }
+      // 页码重置为1
+      reqParams.page = 1
+    }
+
+    const changSort = (sortField) => {
+      reqParams.sortField = sortField
+      // 页码重置为1
+      reqParams.page = 1
     }
 
     // 筛选条件数据
@@ -107,15 +110,21 @@ export default {
     // 初始化需要发请求，筛选条件发生改变发请求
     const commentList = ref([])
     watch(reqParams, () => {
-      // 页码重置为1
-      reqParams.page = 1
       findGoodsCommentList(goods.id, reqParams).then(data => {
         commentList.value = data.result.items
         console.log(data.result.items);
       })
     }, { immediate: true })
 
-    return { commentInfo, currentTagIndex, changeTag, reqParams, commentList }
+    // 定义转换数据的函数（对应vue2.0的过滤器）
+    const formatSpecs = (specs) => {
+      return specs.reduce((p, c) => `${p} ${c.name}：${c.nameValue}`, '').trim()
+    }
+    const formatNickname = (nickname) => {
+      return nickname.substr(0, 1) + '****' + nickname.substr(-1)
+    }
+
+    return { commentInfo, currentTagIndex, changeTag, reqParams, commentList, changSort, formatSpecs, formatNickname }
   }
 }
 </script>
