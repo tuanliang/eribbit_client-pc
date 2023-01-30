@@ -4,14 +4,14 @@
       <a @click="activeName = 'GoodsDetail'" :class="{ active: activeName === 'GoodsDetail' }"
         href="javascript:;">商品详情</a>
       <a @click="activeName = 'GoodsComment'" :class="{ active: activeName === 'GoodsComment' }"
-        href="javascript:;">商品评价<span>(500+)</span></a>
+        href="javascript:;">商品评价<span>({{ goods.commentCount }})</span></a>
     </nav>
     <!-- 切换内容的地方 -->
     <component :is="activeName"></component>
   </div>
 </template>
 <script>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import GoodsDetail from './goods-detail.vue'
 import GoodsComment from './goods-comment.vue'
 export default {
@@ -20,7 +20,10 @@ export default {
   setup () {
     // activeName的值：GoodsDetail，GoodsComment
     const activeName = ref('GoodsDetail')
-    return { activeName }
+
+    const goods = inject('goods')
+
+    return { activeName, goods }
   }
 }
 </script>

@@ -53,7 +53,7 @@ import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-names'
 import GoodsTabs from './components/goods-tabs'
 import GoodsHot from './components/goods-hot'
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, ref, watch, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
 import GoodsSku from './components/goods-sku.vue'
@@ -71,6 +71,9 @@ export default {
         goods.value.inventory = sku.inventory
       }
     }
+
+    // 提供goods数据给后代使用
+    provide('goods', goods)
 
     // 选择的数量
     const num = ref(1)
