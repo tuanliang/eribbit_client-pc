@@ -28,7 +28,7 @@ export default {
       default: ''
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
     const pathMap = getPathMap(props.goods.skus)
 
     // 根据skuId初始化选中
@@ -54,6 +54,26 @@ export default {
       }
       // ☆点击按钮时：更新按钮禁用状态
       updateDisabledStatus(props.goods.specs, pathMap)
+      // 将你选择的sku信息通知父组件{skuId，price，oldPrice，inventory，specsText}
+      // 1.选择完整的sku组合按钮，才可以拿到这些信息，提交父组件
+      // 2.不是完整的sku组合按钮，提交空对象父组件
+      const validSelectedValues = getSelectedValues(props.goods.specs).filter(v => v)
+      if (validSelectedValues.length === props.goods.specs.length) {
+        // 完整
+        const skuIds = pathMap[validSelectedValues.join(spliter)]
+        const sku = props.goods.skus.find(sku => sku.id === skuIds[0])
+        emit('change', {
+          skuId: sku.id,
+          price: sku.price,
+          oldPrice: sku.oldPrice,
+          inventory: sku.inventory,
+          // 属性名1：属性值 属性名2：属性值...
+          specsText: sku.specs.reduce((p, c) => `${p} ${c.name}：${c.valueName}`, '').trim()
+        })
+      } else {
+        // 父组件需要判断是否规格选择完整，不完整不能加购物车
+        emit('change', {})
+      }
     }
     return { changeSku }
   }
