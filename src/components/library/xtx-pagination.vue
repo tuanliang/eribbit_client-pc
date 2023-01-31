@@ -1,22 +1,35 @@
 <template>
   <div class="xtx-pagination">
-    <a @click="myCurrentPage--" v-if="myCurrentPage > 1" href="javascript:;">上一页</a>
+    <a @click="changePager(myCurrentPage - 1)" v-if="myCurrentPage > 1" href="javascript:;">上一页</a>
     <a v-else href="javascript:;" class="disabled">上一页</a>
     <span v-if="pager.start > 1">...</span>
-    <a @click="myCurrentPage = i" href="javascript:;" v-for="i in pager.btnArr" :key="i"
+    <a @click="changePager(i)" href="javascript:;" v-for="i in pager.btnArr" :key="i"
       :class="{ active: i === myCurrentPage }">{{ i }}</a>
     <span v-if="pager.end < pager.pageCount">...</span>
-    <a @click="myCurrentPage++" v-if="myCurrentPage < pager.pageCount" href="javascript:;">下一页</a>
+    <a @click="changePager(myCurrentPage+1)" v-if="myCurrentPage < pager.pageCount" href="javascript:;">下一页</a>
     <a v-else href="javascript:;" class="disabled">下一页</a>
   </div>
 </template>
 <script>
-import { computed } from '@vue/reactivity';
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 export default {
   name: 'XtxPagination',
-  setup () {
+  props: {
+    total: {
+      type: Number,
+      default: 100
+    },
+    pageSize: {
+      type: Number,
+      default: 10
+    },
+    currentPage: {
+      type: Number,
+      default: 1
+    }
+  },
+  setup (props, { emit }) {
     // 需要数据
     // 1.约定按钮的个数 5 个
     const count = 5
@@ -56,7 +69,21 @@ export default {
         end
       }
     })
-    return { myCurrentPage, pager }
+
+    // 监听props数据变化
+    watch(props, () => {
+      myTotal.value = props.total
+      myPageSize.value = props.pageSize
+      myCurrentPage.value = props.currentPage
+    }, { immediate: true })
+
+    // 切换分页的函数
+    const changePager = (page) => {
+      myCurrentPage.value = page
+      // 通知父组件
+      emit('current-page', page)
+    }
+    return { myCurrentPage, pager, changePager }
   }
 }
 </script>

@@ -14,7 +14,7 @@
         </div>
       </div>
     </div>
-    <div class="sort">
+    <div class="sort" v-if="commentInfo">
       <span>排序：</span>
       <a @click="changSort(null)" :class="{ active: reqParams.sortField === null }" href="javascript:;">默认</a>
       <a @click="changSort('createTime')" :class="{ active: reqParams.sortField === 'createTime' }"
@@ -46,7 +46,8 @@
       </div>
     </div>
     <!-- 分页组件 -->
-    <XtxPagination></XtxPagination>
+    <XtxPagination v-if="total" @current-page="changePagerFn" :total="total" :pageSize="reqParams.pageSize"
+      :currentPage="reqParams.page"></XtxPagination>
   </div>
 </template>
 <script>
@@ -116,10 +117,11 @@ export default {
 
     // 初始化需要发请求，筛选条件发生改变发请求
     const commentList = ref([])
+    const total = ref(0)
     watch(reqParams, () => {
-      findGoodsCommentList(goods.id, reqParams).then(data => {
+      findGoodsCommentList(goods.value.id, reqParams).then(data => {
         commentList.value = data.result.items
-        console.log(data.result.items);
+        total.value = data.result.counts
       })
     }, { immediate: true })
 
@@ -131,7 +133,12 @@ export default {
       return nickname.substr(0, 1) + '****' + nickname.substr(-1)
     }
 
-    return { commentInfo, currentTagIndex, changeTag, reqParams, commentList, changSort, formatSpecs, formatNickname }
+    // 实现分页切换
+    const changePagerFn = (newPage) => {
+      reqParams.page = newPage
+    }
+
+    return { changePagerFn, total, commentInfo, currentTagIndex, changeTag, reqParams, commentList, changSort, formatSpecs, formatNickname }
   }
 }
 </script>
