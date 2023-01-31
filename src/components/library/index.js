@@ -3,6 +3,7 @@
 // vue3.0插件要素写法：导出一个对象，有install函数，默认传入了app应用实例，Vue基础之上扩展
 
 import defaultImg from '@/assets/images/qrcode.jpg'
+import Message from './Message'
 
 // import XtxSkeleton from './xtx-skeleton.vue'
 // import XtxCarousel from './xtx-carousel.vue'
@@ -32,6 +33,9 @@ export default {
 
     // 定义指令
     defineDirective(app)
+
+    // 定义一个原型函数
+    app.config.globalProperties.$message = Message
   }
 }
 
