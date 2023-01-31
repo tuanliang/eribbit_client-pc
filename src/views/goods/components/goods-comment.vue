@@ -45,15 +45,18 @@
         </div>
       </div>
     </div>
+    <!-- 分页组件 -->
+    <XtxPagination></XtxPagination>
   </div>
 </template>
 <script>
 import { findGoodsCommentInfo, findGoodsCommentList } from '@/api/product'
+import XtxPagination from '@/components/library/xtx-pagination.vue'
 import { inject, ref, reactive, watch } from 'vue'
 import GoodsCommentImage from './goods-comment-imag.vue'
 export default {
   name: 'GoodsComment',
-  components: { GoodsCommentImage },
+  components: { GoodsCommentImage, XtxPagination },
   setup () {
     // 评价信息
     const commentInfo = ref(null)

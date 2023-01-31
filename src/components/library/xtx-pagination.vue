@@ -1,0 +1,102 @@
+<template>
+  <div class="xtx-pagination">
+    {{ paper.btnArr }}
+    <a href="javascript:;" class="disabled">上一页</a>
+    <span>...</span>
+    <a href="javascript:;" class="active">3</a>
+    <a href="javascript:;">4</a>
+    <a href="javascript:;">5</a>
+    <a href="javascript:;">6</a>
+    <a href="javascript:;">7</a>
+    <span>...</span>
+    <a href="javascript:;">下一页</a>
+  </div>
+</template>
+<script>
+import { computed } from '@vue/reactivity';
+import { ref } from 'vue';
+
+export default {
+  name: 'XtxPagination',
+  setup () {
+    // 需要数据
+    // 1.约定按钮的个数 5 个
+    const count = 5
+    // 2.当前显示的页码
+    const myCurrentPage = ref(1)
+    // 3.总页数=总条数/每一页条数 向上取整
+    const myTotal = ref(100)
+    const myPageSize = ref(10)
+    // 其他数据 （总页数，起始按钮，结束按钮，按钮数组）依赖上面数据得到
+    const paper = computed(() => {
+      // 总页数
+      const pageCount = Math.ceil(myTotal.value / myPageSize.value)
+      // 按钮个数和当前页码 ==》起始按钮，结束按钮，按钮数组
+      // 1.理想情况下
+      const offest = Math.floor(count / 2)
+      let start = myCurrentPage.value - offest
+      let end = start + count - 1
+      // 2.如果起始页码小于1
+      if (start < 1) {
+        start = 1
+        end = (start + count - 1) > pageCount ? pageCount : (start + count - 1)
+      }
+      // 3.如果结束页码大于总页码
+      if (end > pageCount) {
+        end = pageCount
+        start = (end - count + 1) < 1 ? 1 : (end - count + 1)
+      }
+      const btnArr = []
+      for (let i = start; i <= end; i++) {
+        btnArr.push(i)
+      }
+      console.log(btnArr);
+      return {
+        pageCount,
+        btnArr,
+        start,
+        end
+      }
+    })
+    return { myCurrentPage, paper }
+  }
+}
+</script>
+<style scoped lang="less">
+.xtx-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+
+  >a {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #e4e4e4;
+    border-radius: 4px;
+    margin-right: 10px;
+
+    &:hover {
+      color: @xtxColor;
+    }
+
+    &.active {
+      background: @xtxColor;
+      color: #fff;
+      border-color: @xtxColor;
+    }
+
+    &.disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+
+      &:hover {
+        color: #333
+      }
+    }
+  }
+
+  >span {
+    margin-right: 10px;
+  }
+}
+</style>
