@@ -8,19 +8,20 @@
         <i class="iconfont icon-msg"></i> 使用短信登录
       </a>
     </div>
-    <div class="form">
+    <Form class="form" :validation-schema="schema" v-slot="{ errors }">
       <template v-if="!isMsgLogin">
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-user"></i>
-            <input type="text" placeholder="请输入用户名或手机号" />
+            <Field :class="{ error: errors.account }" v-model="form.account" name="account" type="text"
+              placeholder="请输入用户名或手机号" />
           </div>
-          <!-- <div class="error"><i class="iconfont icon-warning" />请输入手机号</div> -->
+          <div class="error" v-if="errors.account"><i class="iconfont icon-warning" />{{ errors.account }}</div>
         </div>
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-lock"></i>
-            <input type="password" placeholder="请输入密码">
+            <Field v-model="form.password" name="password" type="password" placeholder="请输入密码" />
           </div>
         </div>
       </template>
@@ -28,13 +29,13 @@
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-user"></i>
-            <input type="text" placeholder="请输入手机号" />
+            <Field v-model="form.mobile" name="mobile" type="text" placeholder="请输入手机号" />
           </div>
         </div>
         <div class="form-item">
           <div class="input">
             <i class="iconfont icon-code"></i>
-            <input type="password" placeholder="请输入验证码">
+            <Field v-model="form.code" name="code" type="password" placeholder="请输入验证码" />
             <span class="code">发送验证码</span>
           </div>
         </div>
@@ -49,7 +50,7 @@
         </div>
       </div>
       <a href="javascript:;" class="btn">登录</a>
-    </div>
+    </Form>
     <div class="action">
       <img src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png" alt="">
       <div class="url">
@@ -60,17 +61,34 @@
   </div>
 </template>
 <script>
-import { reactive, ref } from 'vue';
-
+import { reactive, ref } from 'vue'
+import { Form, Field } from 'vee-validate'
 export default {
   name: 'LoginForm',
+  components: { Form, Field },
   setup () {
     const isMsgLogin = ref(false)
     // 表单数据对象
     const form = reactive({
-      isAgree: true
+      isAgree: true,
+      account: null,
+      password: null,
+      mobile: null,
+      code: null
     })
-    return { isMsgLogin, form }
+
+    // vee-validate 校验基本步骤
+    // 1.导入Form Field 组件 将form和input进行替换，需要加上name用来指定将来的校验规则函数
+    // 2.Field需要进行数据绑定，字段名称最好和后台接口需要保持一致
+    // 3.定义Field的name属性指定的校验规则函数. Form的validation-schema接受定义好的校验规则 是对象
+    const schema = {
+      // 校验函数规则：返回true就是校验成功，返回一个字符串就是失败，字符串就是错误提示
+      account (value) {
+        if (!value) return '请输入用户名'
+        return true
+      }
+    }
+    return { isMsgLogin, form, schema }
   }
 }
 </script>
