@@ -40,7 +40,9 @@
           <div class="input">
             <i class="iconfont icon-code"></i>
             <Field :class="{ error: errors.code }" v-model="form.code" name="code" type="text" placeholder="请输入验证码" />
-            <span class="code">发送验证码</span>
+            <span @click="send()" class="code">
+              {{ time=== 0 ? '发送验证码' : `${time}秒后发送` }}
+            </span>
           </div>
           <div class="error" v-if="errors.code"><i class="iconfont icon-warning" />{{ errors.code }}</div>
         </div>
@@ -67,13 +69,14 @@
   </div>
 </template>
 <script>
-import { reactive, ref, watch } from 'vue'
+import { onUnmounted, reactive, ref, watch } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schema'
 import Message from '@/components/library/Message'
-import { userAccountLogin } from '@/api/user'
+import { userAccountLogin, userMobileLoginMsg } from '@/api/user'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
+import { useIntervalFn } from '@vueuse/core'
 export default {
   name: 'LoginForm',
   components: { Form, Field },
@@ -126,27 +129,70 @@ export default {
     const login = async () => {
       // Form组件提供了一个validate 函数作为整体表单校验 ，返回的是一个promise
       const valid = await formCom.value.validate()
-      // 1.准备一个API做账号登录
-      // 2.调用API函数
-      // 3.成功：存储用户信息+跳转至来源页或者首页 +消息提示
-      // 4.失败：消息提示
+
       if (valid) {
-        const { account, password } = form
-        userAccountLogin({ account, password }).then(data => {
-          // 存储用户信息
-          const { id, account, avatar, mobile, nickname, token } = data.result
-          store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
-          // 进行跳转
-          router.push(route.query.redirectUrl || '/')
-          Message({ type: 'success', text: '登录成功' })
-        }).catch(e => {
-          if (e.response.data) {
-            Message({ type: 'error', text: e.response.data.message || '登陆失败' })
-          }
-        })
+        if (isMsgLogin.value) {
+          // 手机号登陆
+          // 1.发送验证码
+          // 1.1 绑定发送验证码按钮点击事件
+          // 1.2校验手机号，成功才去发送短信（定义api）,请求成功开启60s倒计时
+          // 1.3 如果失败，失败的校验样式显示出来
+          // 2.手机号登陆
+
+        } else {
+          // 账号登陆
+          // 1.准备一个API做账号登录
+          // 2.调用API函数
+          // 3.成功：存储用户信息+跳转至来源页或者首页 +消息提示
+          // 4.失败：消息提示
+          const { account, password } = form
+          userAccountLogin({ account, password }).then(data => {
+            // 存储用户信息
+            const { id, account, avatar, mobile, nickname, token } = data.result
+            store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
+            // 进行跳转
+            router.push(route.query.redirectUrl || '/')
+            Message({ type: 'success', text: '登录成功' })
+          }).catch(e => {
+            if (e.response.data) {
+              Message({ type: 'error', text: e.response.data.message || '登陆失败' })
+            }
+          })
+        }
       }
     }
-    return { isMsgLogin, form, schema: mySchema, login, formCom }
+
+    // pause 暂停 resume开始
+    // useInterValFn(回调函数,执行间隔,是否立即开启)
+    const time = ref(0)
+    const { pause, resume } = useIntervalFn(() => {
+      if (time.value > 0) {
+        time.value--
+      }
+      if (time.value <= 0) {
+        pause()
+      }
+    }, 1000, false)
+    onUnmounted(() => {
+      pause()
+    })
+    const send = async () => {
+      const valid = mySchema.mobile(form.mobile)
+      if (valid === true) {
+        // 通过
+        if (time.value === 0) {
+          await userMobileLoginMsg(form.mobile)
+          Message({ type: 'success', text: '发送成功' })
+          time.value = 60
+          resume()
+        }
+      } else {
+        // 失败:使用vee的错误函数显示错误信息,setFieldError(地段,错误信息)
+        formCom.value.setFieldError('mobile', valid)
+      }
+    }
+
+    return { isMsgLogin, form, schema: mySchema, login, formCom, send, time }
   }
 }
 </script>
