@@ -52,6 +52,11 @@ export default {
           updateGoods[key] = goods[key]
         }
       }
+    },
+    // 伤处购物车商品
+    deleteCart (state, skuId) {
+      const index = state.list.findIndex(item => item.skuId === skuId)
+      state.list.splice(index, 1)
     }
   },
   actions: {
@@ -86,6 +91,19 @@ export default {
             // 调用resolve代表操作成功
             resolve()
           })
+        }
+      })
+    },
+    // 删除购物车
+    deleteCart (ctx, payload) {
+      // payload就是skuId
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 已登陆
+        } else {
+          // 未登录
+          ctx.commit('deleteCart', payload)
+          resolve()
         }
       })
     }
