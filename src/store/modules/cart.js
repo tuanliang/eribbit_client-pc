@@ -81,6 +81,18 @@ export default {
     }
   },
   actions: {
+    // 修改i购物车（选中状态，数量）
+    updateCart (ctx, payload) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 已登陆
+        } else {
+          // 未登录
+          ctx.commit('updateCart', payload)
+          resolve()
+        }
+      })
+    },
     insertCart (ctx, payload) {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
