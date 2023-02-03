@@ -23,6 +23,27 @@ export default {
     // 有效商品总结额
     validAmount (state, getters) {
       return getters.validList.reduce((p, c) => p + c.nowPrice * 100 * c.count, 0) / 100
+    },
+    // 无效商品列表
+    invalidList (state) {
+      return state.list.filter(goods => goods.stock <= 0 || !goods.isEffective)
+    },
+    // 已选商品列表
+    selectedList (state, getters) {
+      // 库存大于0 stock，商品有效标识为true isEffective
+      return getters.validList.filter(item => item.selected)
+    },
+    // 已选商品总件数
+    selectedTotal (state, getters) {
+      return getters.selectedList.reduce((p, c) => p + c.count, 0)
+    },
+    // 已选商品总金额
+    selectedAmount (state, getters) {
+      return getters.selectedList.reduce((p, c) => p + Math.round(c.nowPrice * 100) * c.count, 0) / 100
+    },
+    // 是否全选
+    isCheckAll (state, getters) {
+      return getters.validList.length !== 0 && (getters.selectedList.length === getters.validList.length)
     }
   },
   mutations: {
@@ -86,7 +107,7 @@ export default {
           Promise.all(promiseArr).then(dataList => {
             // 跟新购物车
             dataList.forEach((data, i) => {
-              ctx.commit('updataCart', { skuId: ctx.state.list[i].skuId, ...data.result })
+              ctx.commit('updateCart', { skuId: ctx.state.list[i].skuId, ...data.result })
             })
             // 调用resolve代表操作成功
             resolve()
