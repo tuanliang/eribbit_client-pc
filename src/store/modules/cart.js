@@ -81,6 +81,20 @@ export default {
     }
   },
   actions: {
+    // 全选与取消全选
+    checkAllCart (ctx, selected) {
+      return new Promise((resolve, reject) => {
+        if (ctx.rootState.user.profile.token) {
+          // 已登陆
+        } else {
+          // 未登录
+          ctx.getters.validList.forEach(goods => {
+            ctx.commit('updateCart', { skuId: goods.skuId, selected })
+          })
+          resolve()
+        }
+      })
+    },
     // 修改i购物车（选中状态，数量）
     updateCart (ctx, payload) {
       return new Promise((resolve, reject) => {
