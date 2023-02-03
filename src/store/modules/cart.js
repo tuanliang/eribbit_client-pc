@@ -8,6 +8,21 @@ export default {
       list: []
     }
   },
+  getters: {
+    // 有效商品 列表
+    validList (state) {
+      // 库存大于0 stock，商品有效标识为true isEffective
+      return state.list.filter(goods => goods.stock > 0 && goods.isEffective)
+    },
+    // 有效商品总件数
+    validTotal (state, getters) {
+      return getters.validList.reduce((p, c) => p + c.count, 0)
+    },
+    // 有效商品总结额
+    validAmount (state, getters) {
+      return getters.validList.reduce((p, c) => p + c.nowPrice * 100 * c.count, 0) / 100
+    }
+  },
   mutations: {
     insertCart (state, payload) {
       // 约定加入购物车字段 必须和后端保持一致
