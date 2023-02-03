@@ -17,9 +17,9 @@ module.exports = defineConfig({
     historyApiFallback: true,
     allowedHosts: "all",
   },
-  configureWebpack: {
-    externals: {
-      qc: 'QC'
-    }
-  },
+  // configureWebpack: {
+  //   externals: {
+  //     qc: 'QC'
+  //   }
+  // },
 })
