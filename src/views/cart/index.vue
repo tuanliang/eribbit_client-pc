@@ -113,10 +113,11 @@
   </div>
 </template>
 <script>
-import Message from '@/components/library/Message'
 import GoodRelevant from '@/views/goods/components/goods-relevant'
 import CartNone from './components/cart-none.vue'
 import { useStore } from 'vuex'
+import Confirm from '@/components/library/Confirm'
+import Message from '@/components/library/Message'
 export default {
   name: 'XtxCartPage',
   components: { GoodRelevant, CartNone },
@@ -131,9 +132,13 @@ export default {
       store.dispatch('cart/checkAllCart', selected)
     }
     const deleteCart = (skuId) => {
-      store.dispatch('cart/deleteCart', skuId).then(() => [
-        Message({ type: 'success', text: '删除成功' })
-      ])
+      Confirm({ text: '是否删除' }).then(() => {
+        store.dispatch('cart/deleteCart', skuId).then(() => {
+          Message({ type: 'success', text: '删除成功' })
+        })
+      }).catch(e => {
+        console.log('取消');
+      })
     }
     return { checkOne, checkAll, deleteCart }
   }
