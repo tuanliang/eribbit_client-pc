@@ -97,7 +97,7 @@
       <div class="action">
         <div class="batch">
           <XtxCheckbox @change="checkAll" :modelValue="$store.getters['cart/isCheckAll']">全选</XtxCheckbox>
-          <a href="javascript:;">删除商品</a>
+          <a @click="batchDeleteCart()" href="javascript:;">删除商品</a>
           <a href="javascript:;">移入收藏夹</a>
           <a href="javascript:;">清空失效商品</a>
         </div>
@@ -140,7 +140,17 @@ export default {
         console.log('取消');
       })
     }
-    return { checkOne, checkAll, deleteCart }
+    // 批量删除选中商品
+    const batchDeleteCart = () => {
+      Confirm({ text: '是否删除选中的商品' }).then(() => {
+        store.dispatch('cart/batchDeleteCart').then(() => {
+          Message({ type: 'success', text: '删除成功' })
+        })
+      }).catch(e => {
+        console.log('取消');
+      })
+    }
+    return { checkOne, checkAll, deleteCart, batchDeleteCart }
   }
 }
 </script>
