@@ -40,6 +40,7 @@ export default {
       count.value = newValue
       console.log(count.value);
       // 提供change事件
+      emit('change', newValue)
     }
     return { changeNum, count }
   }
