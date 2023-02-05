@@ -1,6 +1,6 @@
 // 购物车模块
 
-import { getNewCartGoods, mergeCart } from "@/api/cart"
+import { deleteCart, findCart, getNewCartGoods, insertCart, mergeCart } from "@/api/cart"
 
 export default {
   namespaced: true,
@@ -125,6 +125,13 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登陆
+          const ids = ctx.getters[isClear ? 'invalidList' : 'selectedList'].map(item => item.skuId)
+          deleteCart(ids).then(() => {
+            return findCart()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           // 找出选中的商品列表,遍历调用删除的mutations
@@ -165,6 +172,12 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登陆
+          insertCart({ skuId: payload.skuId, count: payload.count }).then(() => {
+            return findCart()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('insertCart', payload)
@@ -177,6 +190,10 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // TODO 一登陆
+          findCart().then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           // 同时发送请求（有几个商品发几个请求）等所有请求成功，一并去修改本地数据
@@ -201,6 +218,12 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登陆
+          deleteCart([payload]).then(() => {
+            return findCart()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('deleteCart', payload)
