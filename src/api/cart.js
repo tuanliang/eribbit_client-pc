@@ -9,3 +9,12 @@ import request from "@/utils/request"
 export const getNewCartGoods = (skuId) => {
   return request(`/goods/stock/${skuId}`, 'get')
 }
+
+/**
+ * 获取商品对应的sku数据
+ * @param {String} skuId - skuId
+ * @returns
+ */
+export const getGoodsSku = (skuId) => {
+  return request(`/goods/sku/${skuId}`, 'get')
+}
