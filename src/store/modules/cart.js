@@ -1,6 +1,6 @@
 // 购物车模块
 
-import { getNewCartGoods } from "@/api/cart"
+import { getNewCartGoods, mergeCart } from "@/api/cart"
 
 export default {
   namespaced: true,
@@ -78,9 +78,28 @@ export default {
     deleteCart (state, skuId) {
       const index = state.list.findIndex(item => item.skuId === skuId)
       state.list.splice(index, 1)
+    },
+    // 设置购物车
+    setCart (state, payload) {
+      // payload 为空数组表明清空购物车，有值表明设置
+      state.list = payload
     }
   },
   actions: {
+    // 合并购物车
+    async mergeCart (ctx) {
+      // 准备合并的参数
+      const cartList = ctx.state.list.map(goods => {
+        return {
+          skuId: goods.skuId,
+          selected: goods.selected,
+          count: goods.count
+        }
+      })
+      await mergeCart(cartList)
+      // 到这说明合并成功，清空本地购物车
+      ctx.commit('setCart', [])
+    },
     // 修改规格
     updateCartSku (ctx, { oldSkuId, newSku }) {
       return new Promise((resolve, reject) => {
