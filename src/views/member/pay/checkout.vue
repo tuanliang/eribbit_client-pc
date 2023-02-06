@@ -107,7 +107,6 @@ export default {
     const addressID = ref(null)
     const changeAddress = (id) => {
       addressID.value = id
-      console.log(id);
     }
 
     return { order, changeAddress }
