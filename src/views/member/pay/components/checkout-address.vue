@@ -11,7 +11,7 @@
     </div>
     <div class="action">
       <XtxButton @click="openDialog()" class="btn">切换地址</XtxButton>
-      <XtxButton class="btn">添加地址</XtxButton>
+      <XtxButton @click="openAddressEdit" class="btn">添加地址</XtxButton>
     </div>
   </div>
   <!-- 对话框组件 -->
@@ -29,12 +29,15 @@
       <XtxButton @click="confirmAddressFn" type="primary">确认</XtxButton>
     </template>
   </XtxDialog>
+  <!-- 添加编辑组件 -->
+  <AddressEdit @on-success="successHandler" ref="addressEditCom"></AddressEdit>
 </template>
 <script>
-import { ref } from 'vue';
-
+import { ref } from 'vue'
+import AddressEdit from './address-edit.vue'
 export default {
   name: 'CheckoutAddress',
+  components: { AddressEdit },
   props: {
     // 收获地址
     list: {
@@ -79,7 +82,20 @@ export default {
       visibleDialog.value = true
     }
 
-    return { showAddress, visibleDialog, selectedAddress, confirmAddressFn, openDialog }
+    // 打开添加编辑收获地址组件
+    const addressEditCom = ref(null)
+    const openAddressEdit = () => {
+      addressEditCom.value.open()
+    }
+
+    const successHandler = (formData) => {
+      // 添加：往list中添加一条
+      const jsonStr = JSON.stringify(formData)
+      // eslint-disable-next-line vue/no-mutating-props
+      props.list.unshift(JSON.parse(jsonStr))
+    }
+
+    return { showAddress, visibleDialog, selectedAddress, confirmAddressFn, openDialog, openAddressEdit, addressEditCom, successHandler }
   }
 }
 </script>
