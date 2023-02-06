@@ -25,7 +25,7 @@
         <div class="item">
           <p>支付平台</p>
           <a class="btn wx" href="javascript:;"></a>
-          <a class="btn alipay" href="javascript:;"></a>
+          <a class="btn alipay" @click="visibleDialog = true" :href="payUrl" target="_blank"></a>
         </div>
         <div class="item">
           <p>支付方式</p>
@@ -37,6 +37,17 @@
         </div>
       </div>
     </div>
+    <XtxDialog title="正在支付..." v-model:visible="visibleDialog">
+      <div class="pay-wait">
+        <img src="@/assets/images/qrcode.jpg" alt="">
+        <div v-if="order">
+          <p>如果支付成功：</p>
+          <RouterLink :to="`/member/order/${$route.query.orderId}`">查看订单详情></RouterLink>
+          <p>如果支付失败：</p>
+          <RouterLink to="/">查看相关疑问></RouterLink>
+        </div>
+      </div>
+    </XtxDialog>
   </div>
 </template>
 <script>
@@ -44,6 +55,7 @@ import { findOrderDetail } from '@/api/order'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePayTime } from '@/hooks/index'
+import { baseURL } from '@/utils/request'
 export default {
   name: 'XtxPayPage',
   setup () {
@@ -59,11 +71,31 @@ export default {
 
     const { start, timeText } = usePayTime()
 
-    return { order, timeText }
+    // 支付地址
+    const redirect = encodeURIComponent('http://localhost:8080/#/pay/callback')
+    const payUrl = `${baseURL}pay/aliPay?orderId=${route.query.orderId}&redirect=${redirect}`
+
+    const visibleDialog = ref(false)
+
+    return { order, timeText, payUrl, visibleDialog }
   }
 }
 </script>
 <style scoped lang="less">
+.pay-wait {
+  display: flex;
+  justify-content: space-around;
+
+  p {
+    margin-top: 30px;
+    font-size: 14px;
+  }
+
+  a {
+    color: @xtxColor;
+  }
+}
+
 .pay-info {
   background: #fff;
   display: flex;
