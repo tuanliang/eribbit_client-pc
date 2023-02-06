@@ -35,7 +35,8 @@ export default {
       default: () => []
     }
   },
-  setup (props) {
+  emits: ['change'],
+  setup (props, { emit }) {
     // 1.找到默认收获地址
     // 2.如果没有收货地址，使用第一条收货地址
     // 3.如果没有地址，提示添加
@@ -49,6 +50,9 @@ export default {
         showAddress.value = props.list[0]
       }
     }
+
+    // 默认通知父组件一个收货地址ID
+    emit('change', showAddress.value && showAddress.value.id)
 
     // 显示隐藏
     const visibleDialog = ref(false)
