@@ -12,6 +12,7 @@ const Login = () => import('@/views/login/index')
 const LoginCallBack = () => import('@/views/login/callback')
 
 const Checkout = () => import('@/views/member/pay/checkout.vue')
+const Pay = () => import('@/views/member/pay/index.vue')
 
 // 路由规则
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
       { path: '/product/:id', component: Goods },
       { path: '/cart', component: Cart },
       { path: '/member/checkout', component: Checkout },
+      { path: '/member/pay', component: Pay },
     ]
   },
   { path: '/login', component: Login },

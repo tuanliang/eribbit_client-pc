@@ -16,3 +16,8 @@ export const addAddress = (form) => {
 export const submitOrder = (order) => {
   return request('/member/order', 'post', order)
 }
+
+// 获取订单详情
+export const findOrderDetail = (orderId) => {
+  return request('/member/order/' + orderId, 'get')
+}
