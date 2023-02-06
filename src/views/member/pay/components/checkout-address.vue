@@ -10,10 +10,18 @@
       <a v-if="showAddress" href="javascript:;">修改地址</a>
     </div>
     <div class="action">
-      <XtxButton class="btn">切换地址</XtxButton>
+      <XtxButton @click="visibleDialog = true" class="btn">切换地址</XtxButton>
       <XtxButton class="btn">添加地址</XtxButton>
     </div>
   </div>
+  <!-- 对话框组件 -->
+  <XtxDialog title="切换收获地址" v-model:visible="visibleDialog">
+    内容
+    <template #footer>
+      <XtxButton @click="visibleDialog = false" type="gray" style="margin-right:20px">取消</XtxButton>
+      <XtxButton @click="visibleDialog = false" type="primary">确认</XtxButton>
+    </template>
+  </XtxDialog>
 </template>
 <script>
 import { ref } from 'vue';
@@ -41,7 +49,10 @@ export default {
         showAddress.value = props.list[0]
       }
     }
-    return { showAddress }
+
+    // 显示隐藏
+    const visibleDialog = ref(false)
+    return { showAddress, visibleDialog }
   }
 }
 </script>
