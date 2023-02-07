@@ -19,6 +19,7 @@ import HomeOverview from './components/home-overview.vue'
 import Homepanel from './components/home-panel.vue'
 import GoodsRelevant from '@/views/goods/components/goods-relevant.vue'
 import GoodsItem from '@/views/category/components/goods-item.vue'
+import request from '@/utils/request'
 export default {
   name: 'MemberHome',
   components: { HomeOverview, Homepanel, GoodsRelevant, GoodsItem },
@@ -30,6 +31,11 @@ export default {
       desc: '清汤鲜香 红汤劲爽',
       price: '159.00'
     }
+
+    request('/my/test', 'get').then(data => {
+      console.log(data);
+    })
+
     return { goods }
   }
 }
