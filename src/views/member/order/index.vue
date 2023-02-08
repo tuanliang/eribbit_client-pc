@@ -101,7 +101,7 @@ const useConfirm = () => {
   return { handlerConfirm }
 }
 // 查看物流
-const useLogistics = () => {
+export const useLogistics = () => {
   const orderLogisticsCom = ref(null)
   const handlerLogistics = (order) => {
     orderLogisticsCom.value.open(order)
