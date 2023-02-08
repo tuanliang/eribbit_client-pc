@@ -14,6 +14,7 @@
       </template>
     </Suspense>
     <!-- 信息 -->
+    <DetailInfo :order="order"></DetailInfo>
   </div>
 </template>
 <script>
@@ -23,9 +24,10 @@ import { useRoute } from 'vue-router';
 import DetailAction from './components/detail-action.vue'
 import DetailStep from './components/detail-step.vue'
 import DetailLogistics from './components/detail-logistics.vue'
+import DetailInfo from './components/detail-info.vue'
 export default {
   name: 'MemberOrder',
-  components: { DetailAction, DetailStep, DetailLogistics },
+  components: { DetailAction, DetailStep, DetailLogistics, DetailInfo },
   setup () {
     const route = useRoute()
     const order = ref(null)

@@ -52,7 +52,9 @@
         </XtxButton>
         <p @click="$router.push(`/member/order/${order.id}`)"><a href="javascript:;">查看详情</a></p>
         <p @click="$emit('on-cancel', order)" v-if="order.orderState === 1"><a href="javascript:;">取消订单</a></p>
-        <p v-if="[2, 3, 4, 5].includes(order.orderState)"><a href="javascript:;">再次够买</a></p>
+        <p @click="$router.push(`/member/checkout?orderId=${order.id}`)" v-if="[2, 3, 4, 5].includes(order.orderState)">
+          <a href="javascript:;">再次够买</a>
+        </p>
         <p v-if="[4, 5].includes(order.orderState)"><a href="javascript:;">申请售后</a></p>
       </div>
     </div>

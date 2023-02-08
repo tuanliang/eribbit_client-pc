@@ -80,7 +80,7 @@ export default {
   }
 }
 // 取消订单
-const useCancel = () => {
+export const useCancel = () => {
   const orderCancelCom = ref(null)
   const handlerCancel = (order) => {
     orderCancelCom.value.open(order)
@@ -88,7 +88,7 @@ const useCancel = () => {
   return { handlerCancel, orderCancelCom }
 }
 // 确认收货
-const useConfirm = () => {
+export const useConfirm = () => {
   const handlerConfirm = (order) => {
     Confirm({ text: '确认收货吗，确认后货款将打给卖家' }).then(() => {
       confirmOrder(order.id).then(() => {
